@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+      <style>
+:root {
+	--dark: #252A2E;
+	--light: #F5F5F5;
+	--background: var(--light);
+	--text: var(--dark);
+	--border: var(--dark);
+}
+@media (prefers-color-scheme: dark) {
+	:root {
+		--background: var(--dark);
+		--text: var(--light);
+		--border: var(--light);
+	}
+}
+html {
+	box-sizing: border-box;
+}
+*, *:before, *:after {
+	box-sizing: inherit;
+}
+body {
+	display: grid;
+	min-block-size: 100vh;
+	place-content: center;
+	background: var(--background);
+	color: var(--text);
+}
+.tag-scrollers {
+	width: 100%;
+	max-width: 1200px;
+	overflow: hidden;
+}
+
+.tag-scroller {
+	display: grid;
+	gap: 1.5rem;
+	mask: linear-gradient(90deg, #0000, var(--background) 15%, var(--background) 85%, #0000);
+}
+.tag-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem;
+}
+@media (prefers-reduced-motion) {
+	.tag-list {
+		flex-flow: row nowrap;
+		overflow: auto;
+		scrollbar-width: none;
+		scrollbar-color: transparent transparent;
+	}
+	.tag-list::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.tag-list::-webkit-scrollbar-thumb {
+		background: transparent;
+	}
+	.tag-list::-webkit-scrollbar {
+		display: none;
+		width: 0;
+		height: 0;
+	}
+}
+.tag-list li {
+	font-family: system-ui;
+	font-size: 1.125rem;
+	line-height: 1;
+	padding: 0.625rem 1.375rem;
+	border: 2px solid var(--border);
+	border-radius: 10ch;
+	white-space: nowrap;
+}
+.tag-scroller.scrolling .tag-list {
+	width: max-content;
+	flex-wrap: nowrap;
+	animation: horizontal-scroll var(--duration) var(--direction, normal) linear infinite;
+}
+
+.tag-scroller.scrolling .tag-list:nth-child(even) {
+	--direction: reverse;
+}
+.tag-scroller:hover .tag-list {
+	animation-play-state: paused;
+}
+@keyframes horizontal-scroll {
+	to {
+		transform: translateX(calc(-50% - .75rem));
+	}
+}
+      </style>
+</head>
+<body>
+      
+      <div class="tag-scrollers">
+            <div class="tag-scroller">
+                  <ul class="tag-list">
+                        <li>SEO / SEM</li>
+                        <li>Accessibility</li>
+                        <li>Consumer Insights</li>
+                        <li>Back-end</li>
+                        <li>UI</li>
+                        <li>CMS</li>
+                        <li>UX</li>
+                        <li>Market Research</li>
+                        <li>Measurement Strategy</li>
+                        <li>Data Architecture</li>
+                        <li>Online / Digital</li>
+                        <li>Web Analytics</li>
+                        <li>Display</li>
+                        <li>Brand Identity</li>
+                        <li>Front-end</li>
+                        <li>Product Design</li>
+                        <li>Omnichannel Strategy</li>
+                        <li>Offline / Print</li>
+                        <li>Audio</li>
+                        <li>Media Strategy</li>
+                        <li>POS</li>
+                        <li>SoMe</li>
+                        <li>CRM</li>
+                        <li>Motion Graphics</li>
+                        <li>OOH / DOOH</li>
+                        <li>Film Production</li>
+                        <li>Campaign Development</li>
+                        <li>Brand Strategy</li>
+                  </ul>
+            </div>
+      </div>
+
+      <script>
+const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+if (mediaQuery && !mediaQuery.matches) {
+	const tagScroller = document.querySelector(".tag-scroller");
+	const allTags = tagScroller.querySelectorAll("li");
+	
+	function createElement(tagName, className = "") {
+		const elem = document.createElement(tagName);
+		elem.className = className;
+		return elem;
+	}
+	function scrollersFrom(elements, numColumns = 2) {
+		const fragment = new DocumentFragment();
+		elements.forEach((element, i) => {
+			const column = i % numColumns;
+			const children = fragment.children;
+			if (!children[column]) fragment.appendChild(createElement("ul", "tag-list"));
+			children[column].appendChild(element);
+		});
+		return fragment;
+	}
+	const scrollers = scrollersFrom(allTags, 2);
+	tagScroller.innerHTML = "";
+	tagScroller.appendChild(scrollers);
+	addScrolling();
+	function addScrolling() {
+		tagScroller.classList.add("scrolling");
+		document.querySelectorAll(".tag-list").forEach((tagList) => {
+			const scrollContent = Array.from(tagList.children);
+			scrollContent.forEach((listItem) => {
+				const clonedItem = listItem.cloneNode(true);
+				clonedItem.setAttribute("aria-hidden", true);
+				tagList.appendChild(clonedItem);
+			});
+			tagList.style.setProperty("--duration", (tagList.clientWidth / 100) + "s");
+		});
+	}
+}
+      </script>
+</body>
+</html>
